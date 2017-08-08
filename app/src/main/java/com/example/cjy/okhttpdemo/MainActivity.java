@@ -9,9 +9,13 @@ import android.webkit.WebSettings;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +29,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 data[0] = getData();
+                if(data[0] != null && !data[0].isEmpty()) {
+                    Log.i("TAG", data[0]);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, data[0], Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } else if (data[0] == null) {
+                    Log.i("TAG", "null");
+                } else {
+                    Log.i("TAG", "可惜为空");
+                }
             }
         }).start();
         if(data[0] != null && data[0].isEmpty()) {
@@ -38,18 +55,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String getData(){
-        String url = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting" +
-                ".billboard.billList&type=1&size=100&offset=0";
-//        Request request = new Request.Builder().url(url).removeHeader("User-Agent").addHeader("User-Agent",
-//                getUserAgent()).build();
+        String url = "http://tingapi.ting.baidu.com/v1/restserver/ting";
+//        String url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=webapp_music&" +
+//                "method=baidu.ting.search.catalogSug&format=json&callback=&query=%22%E6%" +
+//                "BC%94%E5%91%98%E2%80%9D";
+        RequestBody body = null;
+        try {
+            body = new FormBody.Builder()
+                    .add("method", URLEncoder.encode("baidu.ting.billboard.billList", "utf-8"))
+                    .add("type", URLEncoder.encode("1", "utf-8"))
+                    .add("size", URLEncoder.encode("100", "utf-8"))
+                    .add("offset", URLEncoder.encode("0", "utf-8"))
+                    .build();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         Request request = new Request.Builder()
                 .url(url)
+                .post(body)
+                .removeHeader("User-Agent")
+                .addHeader("User-Agent", getUserAgent())
                 .build();
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .post(body)
+//                .build();
         Response response = null;
         try {
             response = mOkHttpClient.newCall(request).execute();
+            Log.i("返回码:", String.valueOf(response.code()));
             if (response.isSuccessful()) {
-                return response.body().string();
+                String msg = response.body().string();
+                Log.i("返回数据为：", msg);
+                return msg;
             } else {
                 throw new IOException("Unexpected code " + response);
             }
@@ -61,16 +99,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getUserAgent() {
-        Log.i("TAG","测试git提交");
         String userAgent = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             try {
                 userAgent = WebSettings.getDefaultUserAgent(this);
+//                userAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4";
+                Log.i("TAG1",userAgent);
             } catch (Exception e) {
                 userAgent = System.getProperty("http.agent");
+                Log.i("TAG2",userAgent);
             }
         } else {
             userAgent = System.getProperty("http.agent");
+            Log.i("TAG9",userAgent);
         }
         StringBuffer sb = new StringBuffer();
         for (int i = 0, length = userAgent.length(); i < length; i++) {
