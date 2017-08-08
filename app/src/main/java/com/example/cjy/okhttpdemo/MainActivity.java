@@ -1,5 +1,6 @@
 package com.example.cjy.okhttpdemo;
 
+import android.nfc.Tag;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getUserAgent() {
+        Log.i("TAG","测试git提交")；
         String userAgent = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             try {
