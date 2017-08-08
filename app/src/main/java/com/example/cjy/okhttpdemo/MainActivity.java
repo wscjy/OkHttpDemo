@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (data[0] == null) {
             Log.i("TAG", "null");
         } else {
-
+            Log.i("TAG", "可惜为空");
         }
     }
 
