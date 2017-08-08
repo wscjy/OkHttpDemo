@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getUserAgent() {
-        Log.i("TAG","测试git提交")；
+        Log.i("TAG","测试git提交");
         String userAgent = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             try {
